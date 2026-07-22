@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flight to America — English A0→A1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --paper:#F6F7FB;
+    --navy:#16244C;
+    --blue:#2E4C8A;
+    --red:#B33A3F;
+    --ink:#16244C;
+    --line:rgba(22,36,76,0.16);
+    --card:#FFFFFF;
+    --shadow:0 4px 0 rgba(22,36,76,0.1), 0 14px 26px rgba(22,36,76,0.14);
+    --correct-bg:#DFF3E6;
+    --correct-fg:#2E7D4F;
+    --wrong-bg:#FBE1E8;
+    --wrong-fg:#B0455E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); font-family:'Inter',sans-serif; color:var(--ink); min-height:100vh; -webkit-font-smoothing:antialiased;}
+  #app{max-width:780px; margin:0 auto; padding:22px 18px 60px;}
+  h1,h2,h3{font-family:'Fraunces',serif; margin:0; letter-spacing:-0.01em;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--blue); font-weight:600;}
+  button{font-family:inherit; cursor:pointer;}
+  .btn{border:none; border-radius:12px; padding:13px 22px; font-weight:600; font-size:15px; background:var(--navy); color:#fff; box-shadow:0 4px 0 #0a1730;}
+  .btn:active{transform:translateY(3px); box-shadow:none;}
+  .btn.secondary{background:transparent; color:var(--navy); box-shadow:none; border:1.5px solid var(--line);}
+  .btn.accent{background:var(--red); color:#fff; box-shadow:0 4px 0 #7e2226;}
+  .btn:disabled{opacity:.4; cursor:not-allowed; box-shadow:none;}
+  input{font-family:inherit; font-size:15px; padding:12px 14px; border:1.5px solid var(--line); border-radius:10px; width:100%;}
+  .card{background:var(--card); border:1.5px solid var(--line); border-radius:18px; padding:24px 22px; box-shadow:var(--shadow);}
+  .login-wrap{max-width:400px; margin:60px auto; text-align:center;}
+  .login-wrap .eyebrow{display:block; margin-bottom:6px;}
+  .login-wrap h1{font-size:26px; margin-bottom:6px;}
+  .login-wrap p{font-size:13.5px; opacity:.75; margin-bottom:22px;}
+  .field{text-align:left; margin-bottom:14px;}
+  .field label{font-size:12.5px; font-weight:600; color:var(--navy); display:block; margin-bottom:5px;}
+  .loginerr{color:var(--wrong-fg); font-size:13px; margin-top:8px;}
+  .mapcard{background:linear-gradient(180deg, var(--navy), #0a1730); border-radius:18px; padding:18px; box-shadow:var(--shadow); position:relative; overflow:hidden; margin-bottom:18px;}
+  .mapcard svg{width:100%; display:block;}
+  .maplabel{color:#dfe6f4; font-size:11px; font-family:'IBM Plex Mono',monospace;}
+  .pctline{color:#fff; font-family:'Fraunces',serif; font-size:19px; margin-top:6px;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+  .linkbtn{background:none; border:none; color:var(--navy); font-size:13px; text-decoration:underline; opacity:.8; padding:0;}
+  .blocklist{display:flex; flex-direction:column; gap:10px; max-height:520px; overflow-y:auto; padding-right:4px;}
+  .blocktile{display:flex; flex-direction:column; gap:10px; background:var(--card); border:1.5px solid var(--line); border-radius:14px; padding:14px 16px; box-shadow:var(--shadow);}
+  .blocktiletop{display:flex; align-items:center; gap:14px;}
+  .skilllist{display:flex; flex-direction:column; gap:6px; padding-top:8px; border-top:1px dashed var(--line);}
+  .skillrow{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink); opacity:.85;}
+  .skilllabel{flex:1;}
+  .battery{width:54px; height:12px; border:1.5px solid var(--line); border-radius:4px; background:#fff; overflow:hidden; flex-shrink:0; position:relative;}
+  .battery:after{content:""; position:absolute; right:-4px; top:3px; width:3px; height:6px; background:var(--line); border-radius:1px;}
+  .batteryfill{height:100%; background:var(--correct-fg); transition:width .3s;}
+  .blocktile.locked{opacity:.5;}
+  .blocktile .bnum{width:36px; height:36px; border-radius:50%; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; flex-shrink:0;}
+  .blocktile.done .bnum{background:var(--blue);}
+  .blocktile .binfo{flex:1;}
+  .blocktile .bname{font-weight:600; font-size:14.5px;}
+  .blocktile .bframe{font-size:12px; opacity:.65;}
+  .blocktile .bpct{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--blue); margin-right:6px;}
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .taglist{list-style:none; margin:8px 0 0; padding:0; font-size:13px;}
+  .taglist li{padding:6px 0; border-bottom:1px dashed var(--line);}
+  .goodhead{color:var(--blue); font-weight:700; font-size:13px;}
+  .workhead{color:var(--red); font-weight:700; font-size:13px;}
+  .introcard{text-align:left;}
+  .vocabgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;}
+  .vocabitem{background:var(--paper); border-radius:12px; padding:12px; display:flex; gap:10px; align-items:center;}
+  .vocabitem .em{font-size:26px; display:flex; align-items:center;}
+  .vocabitem .en{font-weight:600; font-size:14px;}
+  .vocabitem .ru{font-size:12px; opacity:.7;}
+  .vocabitem .ex{font-size:11px; opacity:.6; font-style:italic; margin-top:2px;}
+  .speak-btn{border:none; background:var(--blue); color:#fff; border-radius:50%; width:30px; height:30px; font-size:13px; margin-left:auto; flex-shrink:0;}
+  .grammartable{width:100%; border-collapse:collapse; margin-top:12px; font-size:13.5px;}
+  .grammartable th,.grammartable td{border:1px solid var(--line); padding:8px 10px; text-align:left;}
+  .grammartable th{background:var(--paper);}
+  .runote{background:var(--paper); border-left:3px solid var(--blue); padding:10px 12px; font-size:13px; margin-top:12px; border-radius:0 8px 8px 0;}
+  .exlist{display:flex; flex-direction:column; gap:16px;}
+  .exnum{width:26px; height:26px; border-radius:50%; background:var(--navy); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:'IBM Plex Mono',monospace;}
+  .exhead2{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .exkind{font-size:12px; color:var(--blue); font-weight:600;}
+  .prompt{font-family:'Fraunces',serif; font-size:19px; margin-bottom:12px; line-height:1.35;}
+  .options{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .opt{background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:12px; font-size:14px; font-weight:500; text-align:left;}
+  .opt.correct{background:var(--correct-bg); border-color:var(--correct-fg); color:var(--correct-fg);}
+  .opt.wrong{background:var(--wrong-bg); border-color:var(--wrong-fg); color:var(--wrong-fg);}
+  .feedback{font-size:13.5px; padding:10px 12px; border-radius:10px; margin-top:12px;}
+  .feedback.bad{background:var(--wrong-bg); color:var(--wrong-fg);}
+  .feedback.good{background:var(--correct-bg); color:var(--correct-fg);}
+  .chipbank{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;}
+  .chip{background:#fff; border:1.5px solid var(--line); border-radius:10px; padding:9px 13px; font-size:14px;}
+  .chip.used{opacity:.3; pointer-events:none;}
+  .answerline{min-height:42px; border-bottom:2px dashed var(--line); display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:6px; padding-bottom:6px;}
+  .answerline .chip{background:var(--navy); color:#fff; border-color:var(--navy);}
+  .matchgrid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:6px;}
+  .matchcol{display:flex; flex-direction:column; gap:8px;}
+  .matchitem{background:#fff; border:1.5px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; text-align:left; display:flex; align-items:center; gap:8px;}
+  .matchitem.selected{border-color:var(--red); background:rgba(179,58,63,0.08);}
+  .matchitem.matched{border-color:var(--correct-fg); background:var(--correct-bg); opacity:.75;}
+  .matchitem.wrongflash{border-color:var(--wrong-fg); background:var(--wrong-bg);}
+  .footerbar{display:flex; justify-content:flex-end; gap:10px; margin-top:16px;}
+  .thinktimer{font-family:'IBM Plex Mono',monospace; font-size:34px; color:var(--blue); text-align:center; margin:16px 0;}
+  textarea{width:100%; font-family:inherit; font-size:14px; padding:12px; border:1.5px solid var(--line); border-radius:10px; min-height:70px;}
+  .summary{text-align:center; padding:14px 6px;}
+  .bigpct{font-family:'Fraunces',serif; font-size:44px; color:var(--navy);}
+  .dialoguebox{background:var(--paper); border-radius:12px; padding:14px; margin-bottom:4px;}
+  .dline{font-size:14px; margin-bottom:8px; line-height:1.4;}
+  .dline b{color:var(--navy);}
+  .finishbar{position:sticky; bottom:14px; margin-top:20px; background:var(--card); border:1.5px solid var(--line); border-radius:14px; padding:14px 16px; box-shadow:var(--shadow); display:flex; justify-content:space-between; align-items:center; gap:12px;}
+  .finishbar .cnt{font-family:'IBM Plex Mono',monospace; font-size:12.5px; opacity:.7;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* =========================================================
+   FLAG ICONS — inline SVG (not emoji), since flag emoji fall
+   back to plain two-letter codes on many systems/fonts.
+   ========================================================= */
+function flagSvg(code){
+  const base = `viewBox="0 0 30 20" width="30" height="20" xmlns="http://www.w3.org/2000/svg"`;
+  switch(code){
+    case "US": return `<svg ${base}><rect width="30" height="20" fill="#fff"/>
+      ${[0,1,2,3,4,5,6].map(i=>`<rect y="${i*20/13}" width="30" height="${20/13}" fill="#B33A3F"/>`).join("")}
+      <rect width="13" height="10.8" fill="#16244C"/></svg>`;
+    case "GB": return `<svg ${base}><rect width="30" height="20" fill="#16244C"/>
+      <line x1="0" y1="0" x2="30" y2="20" stroke="#fff" stroke-width="4"/><line x1="30" y1="0" x2="0" y2="20" stroke="#fff" stroke-width="4"/>
+      <line x1="0" y1="0" x2="30" y2="20" stroke="#B33A3F" stroke-width="1.6"/><line x1="30" y1="0" x2="0" y2="20" stroke="#B33A3F" stroke-width="1.6"/>
+      <rect x="12" width="6" height="20" fill="#fff"/><rect y="7" width="30" height="6" fill="#fff"/>
+      <rect x="13.2" width="3.6" height="20" fill="#B33A3F"/><rect y="8.2" width="30" height="3.6" fill="#B33A3F"/></svg>`;
+    case "RU": return `<svg ${base}><rect width="30" height="6.67" fill="#fff"/><rect y="6.67" width="30" height="6.67" fill="#2E4C8A"/><rect y="13.34" width="30" height="6.66" fill="#B33A3F"/></svg>`;
+    case "FR": return `<svg ${base}><rect width="10" height="20" fill="#2E4C8A"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#B33A3F"/></svg>`;
+    case "DE": return `<svg ${base}><rect width="30" height="6.67" fill="#1a1a1a"/><rect y="6.67" width="30" height="6.67" fill="#B33A3F"/><rect y="13.34" width="30" height="6.66" fill="#E0B23C"/></svg>`;
+    case "IT": return `<svg ${base}><rect width="10" height="20" fill="#3E8F5C"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#B33A3F"/></svg>`;
+    case "ES": return `<svg ${base}><rect width="30" height="20" fill="#B33A3F"/><rect y="5" width="30" height="10" fill="#E0B23C"/></svg>`;
+    case "CN": return `<svg ${base}><rect width="30" height="20" fill="#B33A3F"/><polygon points="5,4 6.2,7.6 10,7.6 7,9.8 8.2,13.4 5,11.2 1.8,13.4 3,9.8 0,7.6 3.8,7.6" fill="#E0B23C"/></svg>`;
+    case "JP": return `<svg ${base}><rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="5.5" fill="#B33A3F"/></svg>`;
+    case "BR": return `<svg ${base}><rect width="30" height="20" fill="#3E8F5C"/><polygon points="15,3 27,10 15,17 3,10" fill="#E0B23C"/><circle cx="15" cy="10" r="4" fill="#2E4C8A"/></svg>`;
+    default: return `<svg ${base}><rect width="30" height="20" fill="#ccc"/></svg>`;
+  }
+}
+
+/* =========================================================
+   DATA — 15-block curriculum. Block 1 fully built, with five
+   sub-topics, each carrying its own intro + exercise set.
+   Blocks 2-15 are stubs (see design doc §2, §9).
+   ========================================================= */
+const BLOCKS = [
+  { id:1, title:"First contact", emoji:"🤝", frame:"Meeting people for the first time", built:true, skills:[
+    {label:"указывать на людей и предметы", sub:"tobe"},
+    {label:"диктовать номер телефона", sub:"numbers"},
+    {label:"называть страны и национальности", sub:"countries"},
+    {label:"знакомиться и прощаться", sub:"greetings"},
+    {label:"говорить, что кому принадлежит", sub:"possessives"},
+  ]},
+  { id:2, title:"Your things", emoji:"🎒", frame:"Belongings, colors, adjectives", built:false, skills:[
+    {label:"говорить, что у тебя есть, а чего нет"},
+    {label:"описывать свои вещи"},
+    {label:"называть цвета и качества предметов"},
+  ]},
+  { id:3, title:"Daily life", emoji:"☀️", frame:"Present Simple & routine", built:false, skills:[
+    {label:"рассказывать о своём распорядке дня"},
+    {label:"говорить о том, что делаешь регулярно"},
+    {label:"рассказывать о своих увлечениях"},
+  ]},
+  { id:4, title:"Family life", emoji:"👨‍👩‍👧", frame:"Family, friends, work & study", built:false, skills:[
+    {label:"рассказывать о своей семье и друзьях"},
+    {label:"спрашивать о работе или учёбе"},
+    {label:"рассказывать о себе подробнее"},
+  ]},
+  { id:5, title:"Questions", emoji:"❓", frame:"Question words in Present Simple", built:false, skills:[
+    {label:"задавать вопросы: что, где, когда, почему"},
+    {label:"подробно отвечать о себе на такие вопросы"},
+  ]},
+  { id:6, title:"Eating out", emoji:"🍽️", frame:"Food, drinks & preferences", built:false, skills:[
+    {label:"заказывать еду и напитки в кафе"},
+    {label:"говорить о своих вкусах в еде"},
+    {label:"спрашивать, что любит другой человек"},
+  ]},
+  { id:7, title:"Around the house", emoji:"🏠", frame:"there is/are, rooms & furniture", built:false, skills:[
+    {label:"описывать, что есть в комнате"},
+    {label:"говорить, где что находится дома"},
+  ]},
+  { id:8, title:"Around town", emoji:"🏙️", frame:"City places & locations", built:false, skills:[
+    {label:"говорить, где находятся места в городе"},
+    {label:"спрашивать и объяснять дорогу"},
+  ]},
+  { id:9, title:"Right now", emoji:"⏱️", frame:"Present Continuous", built:false, skills:[
+    {label:"говорить, что происходит прямо сейчас"},
+    {label:"спрашивать, чем занят другой человек"},
+  ]},
+  { id:10, title:"On the move", emoji:"🚌", frame:"Movement verbs & transport", built:false, skills:[
+    {label:"говорить, как ты передвигаешься"},
+    {label:"называть виды транспорта"},
+  ]},
+  { id:11, title:"Time", emoji:"🕒", frame:"Days, months, dates & time", built:false, skills:[
+    {label:"называть дни недели, месяцы и даты"},
+    {label:"говорить и спрашивать который час"},
+  ]},
+  { id:12, title:"Feelings and events", emoji:"😊", frame:"Life-event verbs & emotions", built:false, skills:[
+    {label:"рассказывать о своих чувствах"},
+    {label:"говорить о важных событиях жизни"},
+  ]},
+  { id:13, title:"Travel", emoji:"✈️", frame:"Trips & sights", built:false, skills:[
+    {label:"рассказывать о путешествиях и отпуске"},
+    {label:"описывать достопримечательности"},
+  ]},
+  { id:14, title:"Ability", emoji:"💪", frame:"can / can't", built:false, skills:[
+    {label:"говорить, что ты умеешь и не умеешь"},
+    {label:"спрашивать о чужих умениях"},
+  ]},
+  { id:15, title:"Future plans", emoji:"📅", frame:"going to, suggestions", built:false, skills:[
+    {label:"рассказывать о планах на выходные"},
+    {label:"предлагать что-то сделать вместе"},
+  ]},
+];
+
+const FEEDBACK_GENERIC = "Почти! Посмотри ещё раз и попробуй снова.";
+
+const SUBTOPICS1 = [
+{
+  id:"tobe", title:"Местоимения и to be",
+  vocab: [
+    {en:"a teacher", ru:"учитель / учительница", em:"👩‍🏫", ex:"She is a teacher."},
+    {en:"a doctor", ru:"врач", em:"🩺", ex:"He is a doctor."},
+    {en:"a student", ru:"студент / студентка", em:"🎓", ex:"Are you a student?"},
+    {en:"a sister", ru:"сестра", em:"👧", ex:"My sister is 20."},
+  ],
+  grammarHtml: `
+    <h3 style="margin:6px 0 10px;">Местоимения и глагол to be</h3>
+    <table class="grammartable">
+      <tr><th></th><th>Утверждение</th><th>Отрицание</th><th>Вопрос</th></tr>
+      <tr><td>I</td><td>I am (I'm)</td><td>I'm not</td><td>Am I...?</td></tr>
+      <tr><td>you / we / they</td><td>you are (you're)</td><td>you aren't</td><td>Are you...?</td></tr>
+      <tr><td>he / she / it</td><td>he is (he's)</td><td>he isn't</td><td>Is he...?</td></tr>
+    </table>
+    <div class="runote">В русском языке в описаниях, например, «Я из России», «Она красивая», «Ты голоден?» и т.д. нет глагола «быть», а английский требует am/is/are.</div>`,
+  exercises: [
+    { kind:"mcq", tag:"to be", instruction:"Выбери правильную форму",
+      prompt:"She ___ from Spain.", options:["am","is","are","be"], answer:"is",
+      feedback:"She / he / it — IS, а we / you / they используются с ARE. Попробуй ещё раз или загляни в правило выше." },
+    { kind:"mcq", tag:"to be", instruction:"Выбери правильную форму",
+      prompt:"They ___ from Brazil.", options:["am","is","are","be"], answer:"are",
+      feedback:"We / you / they — используются с ARE. Попробуй ещё раз или загляни в правило выше." },
+    { kind:"builder", tag:"to be", instruction:"Собери предложение из слов",
+      words:["from","I","Russia","am"], answer:["I","am","from","Russia"] },
+    { kind:"mcq", tag:"to be", instruction:"Сделай предложение отрицательным",
+      prompt:"I am a teacher. →", options:["I amn't a teacher.","I'm not a teacher.","I not am a teacher.","I don't a teacher."], answer:"I'm not a teacher.",
+      feedback:"Отрицание с to be образуется так: I'm not, you aren't, he isn't. Попробуй ещё раз." },
+    { kind:"mcq", tag:"pronouns", instruction:"Замени подлежащее на местоимение",
+      prompt:"My sister is 20. →", options:["He is 20.","She is 20.","It is 20.","They is 20."], answer:"She is 20.",
+      feedback:"Подумай, к какому роду относится слово: он, она или оно? Попробуй ещё раз." },
+    { kind:"type-gap", tag:"to be", instruction:"Впиши пропущенное слово",
+      prompt:"I ___ from Moscow.", answer:"am", feedback:"Загляни в правило выше: какая форма to be идёт с I?" },
+    { kind:"dialogue-read", tag:"to be", instruction:"Прочитай диалог и отметь правда / неправда",
+      dialogue:[
+        {who:"Tom", line:"Hello! I'm Tom. I'm from the USA."},
+        {who:"Anna", line:"Hi Tom! I'm Anna. I'm from Russia."},
+        {who:"Tom", line:"Are you a student?"},
+        {who:"Anna", line:"Yes, I am. Are you a teacher?"},
+        {who:"Tom", line:"No, I'm not. I'm a doctor."},
+      ],
+      questions:[
+        {q:"Tom is from the USA.", answer:true},
+        {q:"Anna is a teacher.", answer:false},
+        {q:"Tom is a doctor.", answer:true},
+      ]},
+    { kind:"active-recall", tag:"to be", instruction:"Сначала подумай, потом напиши по-английски",
+      ru:"Я из России.", answer:"I am from Russia." },
+  ]
+},
+{
+  id:"numbers", title:"Числа 0–20 и номер телефона",
+  vocab: [
+    {en:"zero...twenty", ru:"0–20", em:"🔢", ex:"0 zero · 1 one · 2 two · 3 three · 4 four · 5 five · 6 six · 7 seven · 8 eight · 9 nine · 10 ten"},
+    {en:"eleven...twenty", ru:"11–20", em:"🔢", ex:"11 eleven · 12 twelve · 13 thirteen · 14 fourteen · 15 fifteen · 16 sixteen · 17 seventeen · 18 eighteen · 19 nineteen · 20 twenty"},
+    {en:"a phone number", ru:"номер телефона", em:"📞", ex:"In English, a phone number is said digit by digit: five-five-five, oh-one-nine-two."},
+  ],
+  grammarHtml: "",
+  exercises: [
+    { kind:"listen-pic", tag:"numbers", instruction:"Послушай слово и выбери картинку",
+      audio:"seven", options:["5","7","9","3"], answer:"7" },
+    { kind:"odd-one-out", tag:"numbers", instruction:"Найди лишнее слово",
+      words:["five","ten","table","twenty"], answer:"table",
+      feedback:"Table — это предмет, а не число." },
+    { kind:"type-gap", tag:"numbers", instruction:"Впиши пропущенное слово",
+      prompt:"How do you say 7 in English? →", answer:"seven",
+      feedback:"Посмотри на список чисел в начале подтемы и попробуй ещё раз." },
+    { kind:"builder", tag:"phone", instruction:"«Продиктуй» номер телефона: 555-0192",
+      words:["five","five","five","zero","one","nine","two"], answer:["five","five","five","zero","one","nine","two"] },
+    { kind:"mcq", tag:"phone", instruction:"Послушай номер телефона и выбери правильный",
+      prompt:"Нажми, чтобы услышать номер:", audio:"five five five, zero one nine two",
+      options:["555-0192","515-0192","555-0102","555-9012"], answer:"555-0192" },
+    { kind:"dialogue-read", tag:"phone", instruction:"Прочитай диалог и отметь правда / неправда",
+      dialogue:[
+        {who:"Receptionist", line:"What's your phone number, please?"},
+        {who:"Anna", line:"It's five-five-five, oh-one-nine-two."},
+        {who:"Receptionist", line:"Five-five-five, zero-one-nine-two. Thank you!"},
+      ],
+      questions:[ {q:"Anna gives her phone number.", answer:true}, {q:"The number is 555-0192.", answer:true} ] },
+    { kind:"active-recall", tag:"phone", instruction:"Сначала подумай, потом напиши по-английски",
+      ru:"Мой номер телефона: пять пять пять, ноль один девять два.", answer:"My phone number is five five five zero one nine two." },
+  ]
+},
+{
+  id:"countries", title:"Страны и национальности",
+  vocab: [
+    {en:"the USA / American", ru:"США / американец", flag:"US", ex:"He's American. He's from the USA."},
+    {en:"the UK / British", ru:"Великобритания / британец", flag:"GB", ex:"She's British. She's from the UK."},
+    {en:"Russia / Russian", ru:"Россия / русский", flag:"RU", ex:"I'm Russian. I'm from Russia."},
+    {en:"France / French", ru:"Франция / француз", flag:"FR", ex:"He's French."},
+    {en:"Germany / German", ru:"Германия / немец", flag:"DE", ex:"She's German."},
+    {en:"Italy / Italian", ru:"Италия / итальянец", flag:"IT", ex:"He's Italian."},
+    {en:"Spain / Spanish", ru:"Испания / испанец", flag:"ES", ex:"She's Spanish."},
+    {en:"China / Chinese", ru:"Китай / китаец", flag:"CN", ex:"He's Chinese."},
+    {en:"Japan / Japanese", ru:"Япония / японец", flag:"JP", ex:"She's Japanese."},
+    {en:"Brazil / Brazilian", ru:"Бразилия / бразилец", flag:"BR", ex:"He's Brazilian."},
+  ],
+  grammarHtml: "",
+  exercises: [
+    { kind:"vocab-match", tag:"countries", instruction:"Сопоставь страну с флагом",
+      pairs:[{a:"Russia",bFlag:"RU"},{a:"Japan",bFlag:"JP"},{a:"Brazil",bFlag:"BR"},{a:"France",bFlag:"FR"}] },
+    { kind:"odd-one-out", tag:"countries", instruction:"Найди лишнее слово",
+      words:["French","German","Spanish","Japan"], answer:"Japan",
+      feedback:"Japan — это страна, а остальные слова — национальности (прилагательные)." },
+    { kind:"mcq", tag:"countries", instruction:"Выбери правильную форму",
+      prompt:"She's from Japan. She's ___.", options:["Japan","Japanese","Japanish","China"], answer:"Japanese" },
+    { kind:"type-gap", tag:"countries", instruction:"Впиши пропущенное слово",
+      prompt:"I'm from ___. I'm Brazilian.", answer:"Brazil" },
+    { kind:"dialogue-read", tag:"countries", instruction:"Прочитай диалог и отметь правда / неправда",
+      dialogue:[
+        {who:"Mia", line:"Where are you from?"},
+        {who:"Carlos", line:"I'm from Brazil. I'm Brazilian. And you?"},
+        {who:"Mia", line:"I'm from Germany. I'm German."},
+      ],
+      questions:[ {q:"Carlos is Brazilian.", answer:true}, {q:"Mia is from Italy.", answer:false} ] },
+    { kind:"active-recall", tag:"countries", instruction:"Сначала подумай, потом напиши по-английски",
+      ru:"Я из Германии. Я немец.", answer:"I'm from Germany. I'm German." },
+  ]
+},
+{
+  id:"greetings", title:"Приветствие, знакомство и извинения",
+  vocab: [
+    {en:"Hello / Hi", ru:"Привет / Здравствуйте", em:"👋", ex:"Hello! How are you?"},
+    {en:"Good morning", ru:"Доброе утро", em:"🌅", ex:"Good morning! Nice to see you."},
+    {en:"Goodbye", ru:"До свидания", em:"🚶", ex:"Goodbye! See you soon."},
+    {en:"Nice to meet you", ru:"Приятно познакомиться", em:"🤝", ex:"Nice to meet you, Tom."},
+    {en:"What's your name?", ru:"Как тебя зовут?", em:"🪪", ex:"What's your name? — My name is Anna."},
+    {en:"Where are you from?", ru:"Откуда ты?", em:"🌍", ex:"Where are you from? — I'm from Russia."},
+    {en:"Sorry? Can you repeat, please?", ru:"Извините? Повторите, пожалуйста?", em:"🙉", ex:"Sorry? Can you repeat, please?"},
+    {en:"What's that in English?", ru:"Как это по-английски?", em:"❓", ex:"What's 'привет' in English?"},
+  ],
+  grammarHtml:"",
+  exercises: [
+    { kind:"vocab-match", tag:"greetings", instruction:"Сопоставь слово с картинкой",
+      pairs:[{a:"Hello",b:"👋"},{a:"Good morning",b:"🌅"},{a:"Goodbye",b:"🚶"},{a:"Nice to meet you",b:"🤝"}] },
+    { kind:"connect", tag:"greetings", instruction:"Соедини начало и конец предложения",
+      pairs:[
+        {a:"What's your", b:"name?"},
+        {a:"I'm from", b:"Russia."},
+        {a:"Nice to meet", b:"you."},
+        {a:"See you", b:"soon."},
+      ]},
+    { kind:"mcq", tag:"greetings", instruction:"Выбери лучший ответ в мини-диалоге",
+      prompt:"\"Nice to meet you!\"", options:["Nice to meet you too!","I'm 25.","Goodbye!","It's a table."], answer:"Nice to meet you too!" },
+    { kind:"mcq", tag:"apology", instruction:"Выбери, что нужно сказать",
+      prompt:"Ты не понял(а), что сказал собеседник. Ты говоришь:", options:["Sorry? Can you repeat, please?","Goodbye!","I'm 25.","It's a table."], answer:"Sorry? Can you repeat, please?",
+      feedback:"Именно эта фраза используется, чтобы вежливо попросить повторить." },
+    { kind:"dialogue-read", tag:"greetings", instruction:"Прочитай диалог знакомства и отметь правда / неправда",
+      dialogue:[
+        {who:"Anna", line:"Hello! My name is Anna. What's your name?"},
+        {who:"Tom", line:"Hi Anna! I'm Tom. Nice to meet you."},
+        {who:"Anna", line:"Nice to meet you too! Where are you from?"},
+        {who:"Tom", line:"I'm from the USA. And you?"},
+        {who:"Anna", line:"I'm from Russia."},
+      ],
+      questions:[ {q:"Tom is from the USA.", answer:true}, {q:"Anna's name is Anna.", answer:true}, {q:"Tom is from Russia.", answer:false} ] },
+    { kind:"dialogue-listen", tag:"apology", instruction:"Послушай диалог и отметь правда / неправда",
+      dialogue:[
+        {who:"Clerk", line:"Can I have your name, please?"},
+        {who:"Tom", line:"Sorry? Can you repeat, please?"},
+        {who:"Clerk", line:"Your name, please."},
+        {who:"Tom", line:"Oh! My name is Tom."},
+      ],
+      questions:[ {q:"Tom asks the clerk to repeat.", answer:true}, {q:"Tom understands the first time.", answer:false} ] },
+    { kind:"write-free", tag:"greetings", instruction:"Напиши короткий диалог знакомства (2–3 реплики)",
+      hint:"A: Hello! My name is... B: Hi! My name is... A: Where are you from?" },
+    { kind:"active-recall", tag:"greetings", instruction:"Сначала подумай, потом напиши по-английски",
+      ru:"Привет! Как дела?", answer:"Hello! How are you?" },
+  ]
+},
+{
+  id:"possessives", title:"Притяжательные местоимения",
+  vocab: [
+    {en:"a phone", ru:"телефон", em:"📱", ex:"This is my phone."},
+    {en:"a brother", ru:"брат", em:"👦", ex:"This is my brother, Max."},
+    {en:"a friend", ru:"друг / подруга", em:"🧑‍🤝‍🧑", ex:"This is our friend Mia."},
+    {en:"a house", ru:"дом", em:"🏠", ex:"This is her house."},
+  ],
+  grammarHtml: `
+    <h3 style="margin:6px 0 10px;">Притяжательные местоимения</h3>
+    <table class="grammartable">
+      <tr><th>Местоимение</th><th>Притяжательное</th><th>Пример</th></tr>
+      <tr><td>I</td><td>my</td><td>my name</td></tr>
+      <tr><td>you</td><td>your</td><td>your phone</td></tr>
+      <tr><td>he</td><td>his</td><td>his family</td></tr>
+      <tr><td>she</td><td>her</td><td>her house</td></tr>
+      <tr><td>we</td><td>our</td><td>our friends</td></tr>
+      <tr><td>they</td><td>their</td><td>their name</td></tr>
+    </table>
+    <div class="runote">Притяжательное местоимение ставится перед существительным, как и в русском: «его телефон» → his phone.</div>`,
+  exercises: [
+    { kind:"mcq", tag:"possessives", instruction:"Выбери правильную форму",
+      prompt:"___ name is Tom. (He)", options:["His","Her","Their","My"], answer:"His",
+      feedback:"Загляни в таблицу выше: какое притяжательное местоимение соответствует HE? Попробуй ещё раз." },
+    { kind:"type-gap", tag:"possessives", instruction:"Впиши пропущенное слово",
+      prompt:"This is ___ phone. (I)", answer:"my",
+      feedback:"Загляни в таблицу выше: какое притяжательное местоимение соответствует I? Попробуй ещё раз." },
+    { kind:"builder", tag:"possessives", instruction:"Собери предложение из слов",
+      words:["sister","This","my","is"], answer:["This","is","my","sister"] },
+    { kind:"dialogue-read", tag:"possessives", instruction:"Прочитай текст и отметь правда / неправда",
+      dialogue:[
+        {who:"Anna", line:"This is my brother, Max."},
+        {who:"Anna", line:"His phone number is five-five-five, oh-one-nine-two."},
+        {who:"Tom", line:"Nice! And this is our friend Mia."},
+      ],
+      questions:[ {q:"Max is Anna's brother.", answer:true}, {q:"Mia is Tom's sister.", answer:false} ] },
+    { kind:"active-recall", tag:"possessives", instruction:"Сначала подумай, потом напиши по-английски",
+      ru:"Это её телефон.", answer:"This is her phone." },
+  ]
+},
+];
+
+/* =========================================================
+   STATE + STORAGE
+   ========================================================= */
+let state = {
+  screen:"login", loginErr:"", profileKey:null,
+  data:{ code:"", blocks:{} },
+  block:null, subtopic:null, introSteps:[], introStep:0,
+  blockScore:{correct:0,total:0}, exState:{},
+};
+
+function keyFor(email){ return "profile_" + email.trim().toLowerCase().replace(/[^a-z0-9._-]/g,"_"); }
+async function saveProfile(){
+  try{ if(window.storage && window.storage.set){ await window.storage.set(state.profileKey, JSON.stringify(state.data), false); } }catch(e){}
+}
+function block1Pct(){
+  const bd = state.data.blocks[1];
+  if(!bd || !bd.subtopics) return 0;
+  let sum=0;
+  SUBTOPICS1.forEach(s=>{ sum += (bd.subtopics[s.id]?.pct)||0; });
+  return Math.round(sum/SUBTOPICS1.length);
+}
+function blockPct(id){ return id===1 ? block1Pct() : 0; }
+function firstFourDone(){ return [1,2,3,4].every(id=>blockPct(id)>=90); }
+function overallPct(){ return Math.round(block1Pct()/BLOCKS.length); }
+
+let voices = [];
+function loadVoices(){ voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : []; }
+if('speechSynthesis' in window){ loadVoices(); window.speechSynthesis.onvoiceschanged = loadVoices; }
+function pickVoice(){
+  if(!voices.length) return null;
+  const tests = [
+    v=>/en-US/i.test(v.lang) && /google/i.test(v.name),
+    v=>/en-US/i.test(v.lang) && /(natural|neural|online)/i.test(v.name),
+    v=>/en-US/i.test(v.lang) && /female/i.test(v.name),
+    v=>v.lang==='en-US',
+    v=>v.lang && v.lang.startsWith('en'),
+  ];
+  for(const t of tests){ const found = voices.find(t); if(found) return found; }
+  return null;
+}
+function speak(text){
+  try{
+    if(!('speechSynthesis' in window)) return;
+    const u = new SpeechSynthesisUtterance(text);
+    const us = pickVoice();
+    if(us) u.voice = us;
+    u.lang = "en-US"; u.rate = 0.95; u.pitch = 1.02;
+    window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+/* speaks the FULL phrase for a vocab card (never just the first word) —
+   turns "word / alt-word" into "word or alt-word" and "a...b" ranges
+   into "a to b" so the whole line is read naturally */
+function speechTextFor(v){
+  let t = v.en || "";
+  t = t.replace(/ \/ /g, ". ");
+  t = t.replace(/\.\.\./g, " to ");
+  return t;
+}
+/* proper Fisher-Yates shuffle */
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+/* two independent shuffles that are guaranteed to differ in order from each other,
+   so left/right columns never end up lined up in the same sequence */
+function shufflePair(n){
+  let left = shuffle([...Array(n).keys()]);
+  let right = shuffle([...Array(n).keys()]);
+  let guard = 0;
+  while(JSON.stringify(left)===JSON.stringify(right) && guard<8){ right = shuffle(right); guard++; }
+  return [left, right];
+}
+function esc(s){ return (s||"").replace(/'/g,"\\'").replace(/"/g,"&quot;"); }
+function praise(){
+  const options = ["Right!","Well done!","Good job!"];
+  return options[Math.floor(Math.random()*options.length)];
+}
+
+const app = document.getElementById('app');
+function render(){
+  if(state.screen==="login") return renderLogin();
+  if(state.screen==="home") return renderHome();
+  if(state.screen==="progresstable") return renderProgressTable();
+  if(state.screen==="subtopics") return renderSubtopics();
+  if(state.screen==="subtopic-intro") return renderSubtopicIntro();
+  if(state.screen==="exercise") return renderSubtopicExercises();
+  if(state.screen==="subtopic-summary") return renderSubtopicSummary();
+}
+
+/* ---------- LOGIN ---------- */
+function renderLogin(){
+  app.innerHTML = `
+    <div class="login-wrap">
+      <span class="eyebrow">Flight to America</span>
+      <h1>English, from zero to A1</h1>
+      <p>Enter your email (or any name you like) and a 4-digit code you invent yourself. Next time, the same two things bring you right back to where you stopped.</p>
+      <div class="card">
+        <div class="field"><label>Email или имя</label><input id="loginEmail" placeholder="anna@example.com" /></div>
+        <div class="field"><label>Твой код (4 цифры)</label><input id="loginCode" maxlength="4" inputmode="numeric" placeholder="0000" /></div>
+        <button class="btn" style="width:100%;" onclick="doLogin()">Войти / Продолжить</button>
+        ${state.loginErr ? `<div class="loginerr">${state.loginErr}</div>` : ""}
+      </div>
+    </div>`;
+}
+async function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const code = document.getElementById('loginCode').value.trim();
+  if(!email || !/^\d{4}$/.test(code)){ state.loginErr = "Введи email и код из ровно 4 цифр."; render(); return; }
+  const key = keyFor(email); state.profileKey = key;
+  try{
+    let existing = null;
+    if(window.storage && window.storage.get){
+      const r = await window.storage.get(key, false).catch(()=>null);
+      if(r && r.value) existing = JSON.parse(r.value);
+    }
+    if(existing){
+      if(existing.code !== code){ state.loginErr = "Код не совпадает с этим email. Проверь код или начни новый профиль с другим email."; render(); return; }
+      state.data = existing;
+    } else {
+      state.data = { code, blocks:{} };
+      await saveProfile();
+      alert("Профиль создан! Твой код: " + code + " — запомни его для следующего входа.");
+    }
+  }catch(e){ state.data = { code, blocks:{} }; }
+  state.loginErr = ""; state.screen = "home"; render();
+}
+
+/* ---------- MAP: just a plane and a path to New York ---------- */
+function planeSvg(pct){
+  const xMoscow=560, yMoscow=45, xUSA=60, yUSA=95;
+  const x = xMoscow + (xUSA-xMoscow)*(pct/100);
+  const y = yMoscow + (yUSA-yMoscow)*(pct/100);
+  const angle = Math.atan2(yUSA-yMoscow, xUSA-xMoscow)*180/Math.PI;
+  return `
+  <svg viewBox="0 0 620 130" xmlns="http://www.w3.org/2000/svg">
+    <line x1="${xMoscow}" y1="${yMoscow}" x2="${xUSA}" y2="${yUSA}" stroke="#dfe6f4" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="5,7"/>
+    <circle cx="${xMoscow}" cy="${yMoscow}" r="4" fill="#dfe6f4"/>
+    <text x="${xMoscow-30}" y="${yMoscow-12}" fill="#dfe6f4" font-size="11" font-family="IBM Plex Mono, monospace">Moscow</text>
+    <circle cx="${xUSA}" cy="${yUSA}" r="4" fill="#B33A3F"/>
+    <text x="${xUSA-10}" y="${yUSA+22}" fill="#dfe6f4" font-size="11" font-family="IBM Plex Mono, monospace">New York</text>
+    <g transform="translate(${x},${y}) rotate(${angle})"><text x="-11" y="6" font-size="22">✈️</text></g>
+  </svg>`;
+}
+function skillPct(skill){
+  if(!skill.sub) return 0;
+  const bd = state.data.blocks[1];
+  return (bd && bd.subtopics && bd.subtopics[skill.sub] && bd.subtopics[skill.sub].pct) || 0;
+}
+function renderHome(){
+  const pct = overallPct();
+  const tiles = BLOCKS.map((b)=>{
+    const prevDone = b.id<=4 || firstFourDone();
+    const myPct = b.id<=4 ? blockPct(b.id) : undefined;
+    const done = (myPct||0)>=90;
+    const skillRows = (b.skills||[]).map(s=>{
+      const p = skillPct(s);
+      return `<div class="skillrow"><span class="skilllabel">${s.label}</span><div class="battery"><div class="batteryfill" style="width:${p}%"></div></div></div>`;
+    }).join("");
+    return `<div class="blocktile ${prevDone?'':'locked'} ${done?'done':''}">
+      <div class="blocktiletop">
+        <div class="bnum">${done?'✓':b.id}</div>
+        <div class="binfo"><div class="bname">${b.title} ${b.emoji||''}</div><div class="bframe">${b.frame}</div></div>
+        ${myPct!==undefined ? `<span class="bpct">${myPct}%</span>` : ''}
+        <button class="btn ${prevDone && b.built ? '' : 'secondary'}" ${prevDone?'':'disabled'}
+          onclick="${b.built ? `openBlock(${b.id})` : `alert('Содержание этого блока описано в дизайн-документе (раздел 2) и готово к наполнению тем же движком — в этом прототипе ещё не заполнено.')`}">
+          ${!prevDone ? 'Заблокировано' : b.built ? (done?'Повторить':'Начать') : 'В разработке'}
+        </button>
+      </div>
+      <div class="skilllist">${skillRows}</div>
+    </div>`;
+  }).join("");
+  app.innerHTML = `
+    <div class="topbar">
+      <span class="eyebrow">Flight to America</span>
+      <button class="linkbtn" onclick="state.screen='progresstable'; render();">Мой прогресс →</button>
+    </div>
+    <div class="mapcard">${planeSvg(pct)}<div class="maplabel">Твой путь в США</div><div class="pctline">Ты прошёл ${pct}% пути к уровню A1</div></div>
+    <div class="blocklist">${tiles}</div>
+  `;
+}
+function openBlock(id){ state.block = BLOCKS.find(b=>b.id===id); state.screen = "subtopics"; render(); }
+
+/* ---------- PROGRESS TABLE ---------- */
+function renderProgressTable(){
+  const tagStats = {};
+  const bd = state.data.blocks[1];
+  if(bd && bd.subtopics){
+    Object.values(bd.subtopics).forEach(s=>{
+      Object.entries(s.tags||{}).forEach(([tag,st])=>{
+        tagStats[tag] = tagStats[tag] || {correct:0, attempts:0};
+        tagStats[tag].correct += st.correct; tagStats[tag].attempts += st.attempts;
+      });
+    });
+  }
+  const good = [], needs = [];
+  Object.entries(tagStats).forEach(([tag,s])=>{
+    const acc = s.attempts ? s.correct/s.attempts*100 : 0;
+    (acc>=80 ? good : needs).push(tag);
+  });
+  app.innerHTML = `
+    <button class="linkbtn" onclick="state.screen='home'; render();">← Карта</button>
+    <h2 style="margin:10px 0 4px;">Твой прогресс</h2>
+    <p style="font-size:13px; opacity:.7; margin-top:0;">${overallPct()}% пути к A1 — без соревнований с другими, только с самим собой.</p>
+    <div class="twocol">
+      <div class="card"><div class="goodhead">Хорошо получается</div>
+        <ul class="taglist">${good.length? good.map(t=>`<li>${t}</li>`).join("") : "<li style='opacity:.5'>Пока нет данных</li>"}</ul></div>
+      <div class="card"><div class="workhead">Нужно потренироваться</div>
+        <ul class="taglist">${needs.length? needs.map(t=>`<li>${t}</li>`).join("") : "<li style='opacity:.5'>Пока нет данных</li>"}</ul></div>
+    </div>
+  `;
+}
+
+/* ---------- SUBTOPIC MAP (inside a block) ---------- */
+function renderSubtopics(){
+  state.data.blocks[1] = state.data.blocks[1] || { subtopics:{} };
+  const bd = state.data.blocks[1];
+  const tiles = SUBTOPICS1.map((s,i)=>{
+    const rec = bd.subtopics[s.id];
+    const prevDone = i<3 || (bd.subtopics[SUBTOPICS1[i-1].id]?.pct||0) >= 90;
+    const done = (rec?.pct||0) >= 90;
+    return `<div class="blocktile ${prevDone?'':'locked'} ${done?'done':''}">
+      <div class="blocktiletop">
+        <div class="bnum">${done?'✓':i+1}</div>
+        <div class="binfo"><div class="bname">${s.title}</div></div>
+        ${rec ? `<span class="bpct">${rec.pct}%</span>` : ''}
+        <button class="btn ${prevDone?'':'secondary'}" ${prevDone?'':'disabled'} onclick="openSubtopic('${s.id}')">${!prevDone?'Заблокировано':(done?'Повторить':'Начать')}</button>
+      </div>
+    </div>`;
+  }).join("");
+  app.innerHTML = `
+    <button class="linkbtn" onclick="state.screen='home'; render();">← Карта блоков</button>
+    <div class="eyebrow">Блок ${state.block.id}</div>
+    <h2 style="margin:6px 0 4px;">${state.block.title}</h2>
+    <p style="font-size:13px; opacity:.7; margin-top:0;">${state.block.frame}. Первые 3 подтемы открыты сразу; остальные — по мере прохождения. К пройденным можно вернуться в любой момент.</p>
+    <div class="blocklist">${tiles}</div>
+  `;
+}
+function openSubtopic(id){
+  state.subtopic = SUBTOPICS1.find(s=>s.id===id);
+  state.introSteps = [];
+  if(state.subtopic.vocab && state.subtopic.vocab.length) state.introSteps.push('vocab');
+  if(state.subtopic.grammarHtml) state.introSteps.push('grammar');
+  state.introStep = 0;
+  state.screen = "subtopic-intro";
+  render();
+}
+
+function vocabEmHtml(v){
+  if(v.flag) return flagSvg(v.flag);
+  return v.em || "";
+}
+function renderSubtopicIntro(){
+  const step = state.introSteps[state.introStep];
+  const isLast = state.introStep === state.introSteps.length-1;
+  let body = "";
+  if(step==="vocab"){
+    body = `<div class="introcard">
+      <div class="eyebrow">🔥 Новые слова</div>
+      <h3 style="margin:6px 0 4px;">${state.subtopic.title}</h3>
+      <div class="vocabgrid">
+        ${state.subtopic.vocab.map(v=>`<div class="vocabitem">
+          <div class="em">${vocabEmHtml(v)}</div>
+          <div><div class="en">${v.en}</div><div class="ru">${v.ru}</div><div class="ex">"${v.ex}"</div></div>
+          <button class="speak-btn" onclick="speak(speechTextFor({en:'${esc(v.en)}'}))">🔊</button>
+        </div>`).join("")}
+      </div>
+      <div class="footerbar"><button class="btn" onclick="advanceIntro()">${isLast?'Начать упражнения →':'Дальше →'}</button></div>
+    </div>`;
+  } else if(step==="grammar"){
+    body = `<div class="introcard">
+      <div class="eyebrow">Грамматика</div>
+      ${state.subtopic.grammarHtml}
+      <div class="footerbar"><button class="btn" onclick="advanceIntro()">${isLast?'Начать упражнения →':'Дальше →'}</button></div>
+    </div>`;
+  } else {
+    beginSubtopicExercises(); return;
+  }
+  app.innerHTML = `<button class="linkbtn" onclick="state.screen='subtopics'; render();">← Подтемы блока</button><div class="card">${body}</div>`;
+}
+function advanceIntro(){
+  state.introStep++;
+  if(state.introStep >= state.introSteps.length) beginSubtopicExercises();
+  else render();
+}
+function beginSubtopicExercises(){
+  state.blockScore = {correct:0, total:0};
+  state.exState = {};
+  const bd = state.data.blocks[1];
+  bd.subtopics[state.subtopic.id] = bd.subtopics[state.subtopic.id] || {pct:0, tags:{}};
+  state.screen = "exercise";
+  render();
+}
+
+/* =========================================================
+   EXERCISE ENGINE — every exercise in the sub-topic is
+   rendered at once, stacked top to bottom on one page.
+   No "next/back" is needed between exercises.
+   ========================================================= */
+function logAttempt(tag, correct){
+  const rec = state.data.blocks[1].subtopics[state.subtopic.id];
+  rec.tags[tag] = rec.tags[tag] || {correct:0, attempts:0};
+  rec.tags[tag].attempts++;
+  if(correct) rec.tags[tag].correct++;
+  state.blockScore.total++;
+  if(correct) state.blockScore.correct++;
+}
+function markDone(idx){
+  state.exState[idx] = state.exState[idx] || {};
+  state.exState[idx].done = true;
+  const el = document.getElementById('cnt');
+  if(el) el.textContent = doneCount() + " из " + state.subtopic.exercises.length;
+}
+function doneCount(){ return Object.values(state.exState).filter(e=>e && e.done).length; }
+function esOf(idx){ state.exState[idx] = state.exState[idx] || {}; return state.exState[idx]; }
+
+function renderSubtopicExercises(){
+  const list = state.subtopic.exercises;
+  const sub = state.subtopic;
+  let ruleHtml = "";
+  if((sub.vocab && sub.vocab.length) || sub.grammarHtml){
+    ruleHtml = `<div class="card" style="margin-bottom:16px;">
+      <div class="eyebrow">Правило и словарь этой подтемы</div>
+      ${sub.vocab && sub.vocab.length ? `<div class="vocabgrid" style="margin-top:10px;">
+        ${sub.vocab.map(v=>`<div class="vocabitem">
+          <div class="em">${vocabEmHtml(v)}</div>
+          <div><div class="en">${v.en}</div><div class="ru">${v.ru}</div><div class="ex">"${v.ex}"</div></div>
+          <button class="speak-btn" onclick="speak(speechTextFor({en:'${esc(v.en)}'}))">🔊</button>
+        </div>`).join("")}
+      </div>` : ""}
+      ${sub.grammarHtml || ""}
+    </div>`;
+  }
+  const items = list.map((ex,idx)=>{
+    let body="";
+    if(ex.kind==="vocab-match") body = renderVocabMatch(ex, idx);
+    else if(ex.kind==="odd-one-out") body = renderOddOneOut(ex, idx);
+    else if(ex.kind==="mcq") body = renderMCQEx(ex, idx);
+    else if(ex.kind==="builder") body = renderBuilderEx(ex, idx);
+    else if(ex.kind==="reading"||ex.kind==="dialogue-read"||ex.kind==="dialogue-listen") body = renderReading(ex, idx);
+    else if(ex.kind==="listen-pic") body = renderListenPic(ex, idx);
+    else if(ex.kind==="connect") body = renderConnect(ex, idx);
+    else if(ex.kind==="type-gap") body = renderTypeGap(ex, idx);
+    else if(ex.kind==="write-free") body = renderWriteFree(ex, idx);
+    else if(ex.kind==="active-recall") body = renderActiveRecall(ex, idx);
+    return `<div class="card">
+      <div class="exhead2"><div class="exnum">${idx+1}</div><div class="exkind">${ex.kind==="active-recall" ? "Активное воспоминание" : ""}</div></div>
+      <div id="exbody-${idx}">${body}</div>
+    </div>`;
+  }).join("");
+  app.innerHTML = `
+    <button class="linkbtn" onclick="state.screen='subtopics'; render();">← Подтемы блока</button>
+    <div class="eyebrow">${state.subtopic.title}</div>
+    <h2 style="margin:6px 0 14px;">Упражнения</h2>
+    ${ruleHtml}
+    <div class="exlist">${items}</div>
+    <div class="finishbar">
+      <span class="cnt" id="cnt">${doneCount()} из ${list.length}</span>
+      <button class="btn accent" onclick="finishSubtopic()">Завершить подтему →</button>
+    </div>
+  `;
+  list.forEach((ex,idx)=>{ if(ex.kind==="active-recall") startRecallTimer(idx); });
+}
+
+/* ---- vocab-match / connect (shared logic) ---- */
+function renderVocabMatch(ex, idx){
+  const [leftOrder,rightOrder] = shufflePair(ex.pairs.length);
+  const st = esOf(idx); st.selectedA=null; st.matched=[];
+  const left = leftOrder.map(i=>`<button class="matchitem" data-ex="${idx}" data-side="a" data-i="${i}" onclick="selMatch(${idx},'a',${i})">${ex.pairs[i].a}</button>`).join("");
+  const right = rightOrder.map(i=>`<button class="matchitem" data-ex="${idx}" data-side="b" data-i="${i}" onclick="selMatch(${idx},'b',${i})">${ex.pairs[i].bFlag?flagSvg(ex.pairs[i].bFlag):ex.pairs[i].b}</button>`).join("");
+  return `<div class="exkind">${ex.instruction}</div><div class="prompt">&nbsp;</div>
+    <div class="matchgrid"><div class="matchcol">${left}</div><div class="matchcol">${right}</div></div>`;
+}
+function renderConnect(ex, idx){ return renderVocabMatch(ex, idx); }
+function selMatch(idx, side, i){
+  const st = esOf(idx);
+  const ex = state.subtopic.exercises[idx];
+  const el = document.querySelector(`#exbody-${idx} .matchitem[data-side="${side}"][data-i="${i}"]`);
+  if(el.classList.contains('matched')) return;
+  if(side==='a'){
+    document.querySelectorAll(`#exbody-${idx} .matchitem[data-side="a"]`).forEach(e=>e.classList.remove('selected'));
+    el.classList.add('selected'); st.selectedA = i;
+  } else {
+    if(st.selectedA===null) return;
+    if(st.selectedA===i){
+      document.querySelectorAll(`#exbody-${idx} .matchitem[data-i="${i}"]`).forEach(e=>e.classList.add('matched'));
+      st.matched.push(i); logAttempt(ex.tag, true);
+    } else {
+      el.classList.add('wrongflash'); logAttempt(ex.tag, false);
+      setTimeout(()=>{ el.classList.remove('wrongflash'); document.querySelectorAll(`#exbody-${idx} .matchitem[data-side="a"]`).forEach(e=>e.classList.remove('selected')); },500);
+    }
+    st.selectedA=null;
+  }
+  if(st.matched.length===ex.pairs.length) markDone(idx);
+}
+
+function renderOddOneOut(ex, idx){
+  const opts = ex.words.map(w=>`<button class="opt" onclick="answerSimple(${idx},this,'${esc(w)}','${esc(ex.answer)}','${ex.tag}','${esc(ex.feedback)}')">${w}</button>`).join("");
+  return `<div class="exkind">${ex.instruction}</div><div class="prompt">Найди слово, которое не подходит к остальным:</div>
+    <div class="options">${opts}</div><div id="fb-${idx}"></div>`;
+}
+function renderMCQEx(ex, idx){
+  const opts = shuffle(ex.options).map(o=>`<button class="opt" onclick="answerSimple(${idx},this,'${esc(o)}','${esc(ex.answer)}','${ex.tag}','${esc(ex.feedback||FEEDBACK_GENERIC)}')">${o}</button>`).join("");
+  const audioBtn = ex.audio ? `<button class="speak-btn" style="width:32px;height:32px;" onclick="speak('${esc(ex.audio)}')">🔊</button>` : "";
+  return `<div class="exkind">${ex.instruction}</div><div class="prompt">${ex.prompt} ${audioBtn}</div>
+    <div class="options">${opts}</div><div id="fb-${idx}"></div>`;
+}
+function answerSimple(idx, btn, choice, answer, tag, feedback){
+  const st = esOf(idx);
+  if(st.answered) return; st.answered=true;
+  const correct = choice===answer;
+  logAttempt(tag, correct);
+  const fb = document.getElementById('fb-'+idx);
+  if(!correct){ btn.classList.add('wrong'); fb.innerHTML = `<div class="feedback bad">${feedback}</div>`; }
+  else { btn.classList.add('correct'); fb.innerHTML = `<div class="feedback good">${praise()}</div>`; }
+  markDone(idx);
+}
+
+function renderBuilderEx(ex, idx){
+  const st = esOf(idx); st.answer=[]; st.used=[];
+  const bank = ex.words.map((w,i)=>`<button class="chip" data-idx="${i}" onclick="pickChip(${idx},${i})">${w}</button>`).join("");
+  return `<div class="exkind">${ex.instruction}</div><div class="prompt">Составь правильное предложение</div>
+    <div class="answerline" id="ansline-${idx}"></div>
+    <div class="chipbank" id="bank-${idx}">${bank}</div>
+    <div class="footerbar"><button class="btn secondary" onclick="undoChip(${idx})">Отменить</button><button class="btn" onclick="checkBuilder(${idx})">Проверить</button></div>
+    <div id="fb-${idx}"></div>`;
+}
+function pickChip(idx, i){
+  const st = esOf(idx);
+  if(st.used.includes(i)) return;
+  st.used.push(i);
+  st.answer.push(state.subtopic.exercises[idx].words[i]);
+  document.querySelectorAll(`#bank-${idx} .chip`)[i].classList.add('used');
+  document.getElementById('ansline-'+idx).innerHTML = st.answer.map(w=>`<span class="chip">${w}</span>`).join("");
+}
+function undoChip(idx){
+  const st = esOf(idx);
+  const i = st.used.pop(); st.answer.pop();
+  if(i!==undefined) document.querySelectorAll(`#bank-${idx} .chip`)[i].classList.remove('used');
+  document.getElementById('ansline-'+idx).innerHTML = st.answer.map(w=>`<span class="chip">${w}</span>`).join("");
+}
+function checkBuilder(idx){
+  const ex = state.subtopic.exercises[idx];
+  const st = esOf(idx);
+  if(st.checked) return; st.checked=true;
+  const correct = JSON.stringify(st.answer)===JSON.stringify(ex.answer);
+  logAttempt(ex.tag, correct);
+  document.getElementById('fb-'+idx).innerHTML = correct
+    ? `<div class="feedback good">${praise()}</div>`
+    : `<div class="feedback bad">${ex.feedback||"Порядок не совсем верный. Загляни в правило выше и попробуй ещё раз."}</div>`;
+  markDone(idx);
+}
+
+function renderReading(ex, idx){
+  const st = esOf(idx); st.qIdx = 0;
+  return readingQHtml(ex, idx);
+}
+function readingQHtml(ex, idx){
+  const st = esOf(idx);
+  const q = ex.questions[st.qIdx];
+  let contentHtml;
+  if(ex.dialogue){
+    contentHtml = `<div class="dialoguebox">${ex.dialogue.map(d=>`<div class="dline"><b>${d.who}:</b> ${d.line} ${ex.kind==='dialogue-listen'?`<button class="speak-btn" style="width:24px;height:24px;font-size:11px;" onclick="speak('${esc(d.line)}')">🔊</button>`:''}</div>`).join("")}
+      ${ex.kind==='dialogue-listen' ? `<button class="btn secondary" onclick="speakDialogue(${idx})">🔊 Слушать весь диалог</button>`:''}
+    </div>`;
+  } else {
+    contentHtml = `<div class="prompt" style="font-size:16px;">${ex.text}</div>`;
+  }
+  return `<div class="exkind">${ex.instruction}</div>${contentHtml}
+    <div class="prompt" style="font-size:16px; margin-top:16px;">${q.q}</div>
+    <div class="options"><button class="opt" onclick="answerReading(${idx},this,true)">Правда</button><button class="opt" onclick="answerReading(${idx},this,false)">Неправда</button></div>
+    <div id="fb-${idx}"></div>`;
+}
+function speakDialogue(idx){
+  const ex = state.subtopic.exercises[idx];
+  (ex.dialogue||[]).forEach((d,i)=> setTimeout(()=>speak(d.line), i*1800));
+}
+function answerReading(idx, btn, choice){
+  const ex = state.subtopic.exercises[idx];
+  const st = esOf(idx);
+  if(st.answered) return; st.answered = true;
+  const q = ex.questions[st.qIdx];
+  const correct = choice===q.answer;
+  logAttempt(ex.tag, correct);
+  document.getElementById('fb-'+idx).innerHTML = correct? `<div class="feedback good">${praise()}</div>` : `<div class="feedback bad">На самом деле: ${q.answer? "правда":"неправда"}.</div>`;
+  setTimeout(()=>{
+    st.qIdx++; st.answered = false;
+    if(st.qIdx>=ex.questions.length) markDone(idx);
+    else document.getElementById('exbody-'+idx).innerHTML = readingQHtml(ex, idx);
+  }, 1100);
+}
+
+function renderListenPic(ex, idx){
+  return `<div class="exkind">${ex.instruction}</div>
+    <button class="speak-btn" style="width:44px;height:44px;font-size:20px;" onclick="speak('${esc(ex.audio)}')">🔊</button>
+    <div class="prompt" style="margin-top:12px;">Нажми, чтобы услышать слово, потом выбери картинку:</div>
+    <div class="options">${ex.options.map(o=>`<button class="opt" style="font-size:22px; text-align:center;" onclick="answerSimple(${idx},this,'${esc(o)}','${esc(ex.answer)}','${ex.tag}','${FEEDBACK_GENERIC}')">${o}</button>`).join("")}</div>
+    <div id="fb-${idx}"></div>`;
+}
+
+function renderTypeGap(ex, idx){
+  return `<div class="exkind">${ex.instruction}</div><div class="prompt">${ex.prompt}</div>
+    <input id="typeAns-${idx}" placeholder="Напиши слово..." />
+    <div class="footerbar"><button class="btn" onclick="checkType(${idx})">Проверить</button></div>
+    <div id="fb-${idx}"></div>`;
+}
+function checkType(idx){
+  const ex = state.subtopic.exercises[idx];
+  const st = esOf(idx);
+  if(st.checked) return; st.checked=true;
+  const val = document.getElementById('typeAns-'+idx).value.trim().toLowerCase();
+  const correct = val===ex.answer.toLowerCase();
+  logAttempt(ex.tag, correct);
+  document.getElementById('fb-'+idx).innerHTML = correct? `<div class="feedback good">${praise()}</div>` : `<div class="feedback bad">${ex.feedback||FEEDBACK_GENERIC}</div>`;
+  markDone(idx);
+}
+
+function renderWriteFree(ex, idx){
+  return `<div class="exkind">${ex.instruction}</div>
+    <div class="prompt" style="font-size:15px;">${ex.hint}</div>
+    <textarea id="freeText-${idx}" placeholder="Напиши здесь..."></textarea>
+    <div class="footerbar"><button class="btn" onclick="submitFree(${idx})">Готово</button></div>
+    <div id="fb-${idx}"></div>`;
+}
+function submitFree(idx){
+  const ex = state.subtopic.exercises[idx];
+  const st = esOf(idx);
+  if(st.checked) return; st.checked=true;
+  const val = document.getElementById('freeText-'+idx).value.trim();
+  logAttempt(ex.tag, val.length>0);
+  document.getElementById('fb-'+idx).innerHTML = `<div class="feedback good">Отлично, ты написал(а) это по-английски — это и есть цель! ✅</div>`;
+  markDone(idx);
+}
+
+function renderActiveRecall(ex, idx){
+  return `<div class="exkind">${ex.instruction}</div><div class="prompt">${ex.ru}</div>
+    <div class="thinktimer" id="timerNum-${idx}">5</div>
+    <div class="footerbar" style="justify-content:center;"><button class="btn accent" onclick="revealRecall(${idx})">Я готов(а) →</button></div>`;
+}
+function startRecallTimer(idx){
+  let n=5;
+  const st = esOf(idx);
+  clearInterval(st.timer);
+  st.timer = setInterval(()=>{
+    n--; const el = document.getElementById('timerNum-'+idx);
+    if(!el){ clearInterval(st.timer); return; }
+    if(n<=0){ clearInterval(st.timer); revealRecall(idx); } else el.textContent = n;
+  },1000);
+}
+function revealRecall(idx){
+  const st = esOf(idx);
+  clearInterval(st.timer);
+  const ex = state.subtopic.exercises[idx];
+  const body = document.getElementById('exbody-'+idx);
+  if(!body || body.dataset.revealed) return;
+  body.dataset.revealed = "1";
+  body.innerHTML = `
+    <div class="exkind">${ex.instruction}</div><div class="prompt">${ex.ru}</div>
+    <input id="recallAns-${idx}" placeholder="Type it in English..." />
+    <div class="footerbar"><button class="btn" onclick="checkRecall(${idx})">Проверить</button></div>
+    <div id="fb-${idx}"></div>`;
+}
+function checkRecall(idx){
+  const ex = state.subtopic.exercises[idx];
+  const st = esOf(idx);
+  if(st.checked) return; st.checked=true;
+  const val = document.getElementById('recallAns-'+idx).value.trim().toLowerCase().replace(/[.!?]/g,"");
+  const target = ex.answer.toLowerCase().replace(/[.!?]/g,"");
+  const correct = val===target;
+  logAttempt(ex.tag, correct);
+  document.getElementById('fb-'+idx).innerHTML = correct? `<div class="feedback good">${praise()}</div>` : `<div class="feedback bad">${ex.feedback||"Загляни в правило выше и попробуй вспомнить фразу ещё раз."}</div>`;
+  markDone(idx);
+}
+
+/* ---------- SUBTOPIC SUMMARY ---------- */
+function finishSubtopic(){
+  const pct = state.blockScore.total ? Math.round(state.blockScore.correct/state.blockScore.total*100) : 0;
+  const rec = state.data.blocks[1].subtopics[state.subtopic.id];
+  rec.pct = Math.max(rec.pct||0, pct);
+  saveProfile();
+  state._lastPct = pct;
+  state.screen = "subtopic-summary";
+  render();
+}
+function renderSubtopicSummary(){
+  const pct = state._lastPct;
+  const passed = pct>=90;
+  app.innerHTML = `
+    <div class="card summary">
+      <div class="eyebrow">${state.subtopic.title} — итог</div>
+      <div class="bigpct">${pct}%</div>
+      <p style="font-size:14px; opacity:.75;">${passed ? "90%+ — следующая подтема открыта!" : "Пока меньше 90% — стоит вернуться к этой подтеме позже и повторить."}</p>
+      <div class="footerbar" style="justify-content:center;">
+        <button class="btn secondary" onclick="state.screen='progresstable'; render();">Мой прогресс</button>
+        <button class="btn" onclick="state.screen='subtopics'; render();">Подтемы блока</button>
+      </div>
+    </div>`;
+}
+
+render();
+</script>
+</body>
+</html>
